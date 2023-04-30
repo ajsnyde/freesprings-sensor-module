@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import depthai as dai
-from depthai_sdk import OakCamera, RecordType
 
 camRes = dai.MonoCameraProperties.SensorResolution.THE_800_P
 camSocket = dai.CameraBoardSocket.LEFT
@@ -16,9 +15,9 @@ mapX, mapY = cv2.initUndistortRectifyMap(M1, d1, R1, M1, [1280, 800], cv2.CV_32F
 
 
 leftRect = cv2.VideoWriter(
-    "leftRect.avi", cv2.VideoWriter_fourcc(*'FMP4'), 2, (1280, 800))
+    "leftRect.avi", cv2.VideoWriter_fourcc(*'FMP4'), 120, (1280, 800))
 rightRect = cv2.VideoWriter(
-    "rightRect.avi", cv2.VideoWriter_fourcc(*'FMP4'), 2, (1280, 800))
+    "rightRect.avi", cv2.VideoWriter_fourcc(*'FMP4'), 120, (1280, 800))
 
 left = cv2.VideoCapture("left.mp4")
 right = cv2.VideoCapture("right.mp4")

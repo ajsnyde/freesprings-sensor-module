@@ -97,7 +97,7 @@ with dai.Device(pipeline) as dev:
     red.off()
     green.on()
     # Processing loop
-    with open('mono1.h264', 'wb') as fileMono1H264, open('mono2.h264', 'wb') as fileMono2H264, open('imuData.csv', 'w') as imuFile, open('depthSensorData.csv', 'w') as depthSensorFile:
+    with open('left.h264', 'wb') as fileMono1H264, open('right.h264', 'wb') as fileMono2H264, open('imuData.csv', 'w') as imuFile, open('depthSensorData.csv', 'w') as depthSensorFile:
         print("Press Ctrl+C to stop encoding...")
         depthSensorFile.write("timeMillis,mbar,meters,celsius,fahrenheit\n")
                               
@@ -142,5 +142,5 @@ with dai.Device(pipeline) as dev:
 
     print("To view the encoded data, convert the stream file (.h264/.h265) into a video file (.mp4), using commands below:")
     cmd = "ffmpeg -framerate 120 -i {} -c copy {}"
-    print(cmd.format("mono1.h264", "mono1.mp4"))
-    print(cmd.format("mono2.h264", "mono2.mp4"))
+    print(cmd.format("left.h264", "left.mp4"))
+    print(cmd.format("right.h264", "right.mp4"))
