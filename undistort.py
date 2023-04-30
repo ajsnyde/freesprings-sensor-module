@@ -1,15 +1,32 @@
 import cv2
 import numpy as np
 import depthai as dai
+import pickle
+from os.path import exists
 
 camRes = dai.MonoCameraProperties.SensorResolution.THE_800_P
 camSocket = dai.CameraBoardSocket.LEFT
 ispScale = (1,2)
 
-calibData = dai.Device().readCalibration()
+# read existing camera properties from file if exists, otherwise get from camera.
+# This is nice when processing on another machine without the cam hooked up.
+if exists("cameraIntrinsics") and exists("cameraDistortionCoefficients"):
+    with open("cameraIntrinsics", "rb") as f:
+        cameraIntrinsics = pickle.load(f)
+    with open("cameraDistortionCoefficients", "rb") as f:
+        cameraDistortionCoefficients = pickle.load(f)
+else:
+    calibData = dai.Device().readCalibration()
+    with open("cameraIntrinsics", "wb") as f:
+        cameraIntrinsics = calibData.getCameraIntrinsics(camSocket, resizeWidth=1280, resizeHeight=800)
+        pickle.dump(cameraIntrinsics, f)
+    with open("cameraDistortionCoefficients", "wb") as f:
+        cameraDistortionCoefficients = calibData.getDistortionCoefficients(camSocket)
+        pickle.dump(cameraDistortionCoefficients, f)
 
-M1 = np.array(calibData.getCameraIntrinsics(camSocket, resizeWidth=1280, resizeHeight=800))
-d1 = np.array(calibData.getDistortionCoefficients(camSocket))
+
+M1 = np.array(cameraIntrinsics)
+d1 = np.array(cameraDistortionCoefficients)
 R1 = np.identity(3)
 mapX, mapY = cv2.initUndistortRectifyMap(M1, d1, R1, M1, [1280, 800], cv2.CV_32FC1)
 
