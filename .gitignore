@@ -3,6 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# video files and recorded data
+*.avi
+*.mp4
+*.h264
+*.h265
+*.csv
+*.json
+
 # C extensions
 *.so
 
