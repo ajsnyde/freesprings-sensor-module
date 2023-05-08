@@ -7,6 +7,7 @@ import math
 import ms5837
 import numpy as np
 import subprocess
+import logging
 
 from gpiozero import LED
 
@@ -16,19 +17,22 @@ red = LED(27)
 red.blink()
 green.blink()
 
+logging.basicConfig(filename='encoder.log', filemode='a', format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s', datefmt='%H:%M:%S', level=logging.DEBUG)
+
+logging.info("initializing...")
+
 try:
     # depth sensor
     sensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
 
     # We must initialize the sensor before reading it
+    logging.info("initializing...")
     if not sensor.init():
-        print("Sensor could not be initialized")
-        exit(1)
+        raise Exception("Depth sensor could not be initialized")
 
     # We have to read values from sensor to update pressure and temperature
     if not sensor.read():
-        print("Sensor read failed!")
-        exit(1)
+        raise Exception("Depth sensor read failed!")
 
     # Create pipeline
     pipeline = dai.Pipeline()
@@ -101,6 +105,8 @@ try:
         while os.path.exists("left%s.h264" % i) or os.path.exists("left%s.mp4" % i) or os.path.exists("right%s.h264" % i) or os.path.exists("right%s.mp4" % i):
             i += 1
 
+        logging.info("file suffix #: " + str(i))
+
         red.off()
         green.on()
         # Processing loop
@@ -162,7 +168,9 @@ try:
 except Exception as e:
     red.on()
     green.off()
+    logging.error("Failed state: " + str(e))
     input("Failed state: " + str(e) + "\nPress any key to continue")
 finally:
     red.off()
     green.off()
+    logging.info("Shutting down...")
