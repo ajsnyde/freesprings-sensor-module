@@ -107,6 +107,12 @@ try:
 
         logging.info("file suffix #: " + str(i))
 
+        # Empty each queue
+        while outQ1.has():
+            outQ1.get().getData()
+
+        while outQ3.has():
+            outQ3.get().getData()
         # gives the camera enough time to adjust ISO
         time.sleep(1)
 
