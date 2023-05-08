@@ -107,6 +107,9 @@ try:
 
         logging.info("file suffix #: " + str(i))
 
+        # gives the camera enough time to adjust ISO
+        time.sleep(1)
+
         red.off()
         green.on()
         # Processing loop
