@@ -89,7 +89,7 @@ with dai.Device(pipeline) as dev:
     # Output queue for imu bulk packets
     imuQueue = dev.getOutputQueue("IMU", maxSize=200, blocking=True)
     baseTs = None
-
+    startSystemTime = None
     # Output queues will be used to get the encoded data from the output defined above
     outQ1 = dev.getOutputQueue('ve1Out', maxSize=130, blocking=True)
     outQ3 = dev.getOutputQueue('ve3Out', maxSize=130, blocking=True)
@@ -121,13 +121,17 @@ with dai.Device(pipeline) as dev:
                         gyroTs = gyroValues.getTimestampDevice()
                         if baseTs is None:
                             baseTs = acceleroTs if acceleroTs < gyroTs else gyroTs
+                        if startSystemTime is None:
+                            startSystemTime = time.time()
                         acceleroTs = timeDeltaToMilliS(acceleroTs - baseTs)
                         gyroTs = timeDeltaToMilliS(gyroTs - baseTs)
+                        
+                        systemTimeDelta = time.time() - startSystemTime
 
                         imuF = "{:.06f}"
                         tsF = "{:.03f}"
 
-                        imuFile.write(f"{tsF.format(acceleroTs)},{imuF.format(acceleroValues.x)},{imuF.format(acceleroValues.y)},{imuF.format(acceleroValues.z)},{imuF.format(gyroValues.x)},{imuF.format(gyroValues.y)},{imuF.format(gyroValues.z)}\n")
+                        imuFile.write(f"{tsF.format(systemTimeDelta)},{tsF.format(acceleroTs)},{imuF.format(acceleroValues.x)},{imuF.format(acceleroValues.y)},{imuF.format(acceleroValues.z)},{imuF.format(gyroValues.x)},{imuF.format(gyroValues.y)},{imuF.format(gyroValues.z)}\n")
 
                 # Empty each queue
                 while outQ1.has():
